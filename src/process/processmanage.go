@@ -41,6 +41,7 @@ func NewPM() *ProcessManagement {
 
 //向准备队列中添加一个PCB
 func (pm *ProcessManagement) addToReadyList(Priority int, pcb *PCB) {
+	pcb.Status = PCB_READY
 	pm.ReadyList[Priority].PushBack(pcb)
 }
 
@@ -151,7 +152,6 @@ func (pm *ProcessManagement) ScanBlockForRes(rcb *RCB) bool {
 		if pcb.BlockingForRes.N <= rcb.FreeResCnt {
 			pcb.Request(rcb, pcb.BlockingForRes.N) //重新申请资源
 
-			pcb.Status = PCB_READY               //进程变成就绪状态
 			pm.addToReadyList(pcb.Priority, pcb) //加入就绪队列
 
 			rcb.WaitingList.Remove(ele) //将PCB从RCB的阻塞列表删除
@@ -202,11 +202,12 @@ func (pm *ProcessManagement) Timeout() error {
 	//调度之后的PCB优先级低于之前PCB的优先级，
 	//禁止调度，恢复
 	if pm.PCBCur.Priority < lastPCB.Priority {
+		//重新设为准备状态
+		pm.PCBCur.Status = PCB_READY
 		//重新放回等待队列，注意是首部
 		pm.ReadyList[pm.PCBCur.Priority].PushFront(pm.PCBCur)
 		pm.SetRunning(lastPCB)
 	} else { //放入就绪队列
-		lastPCB.Status = PCB_READY
 		pm.addToReadyList(lastPCB.Priority, lastPCB)
 	}
 	return nil

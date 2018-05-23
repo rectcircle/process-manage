@@ -84,7 +84,7 @@ func showPCBDetail(pcb *process.PCB, isLastChilds []bool) {
 	}
 
 	if pcb.OtherResource.Len() == 0 {
-		fmt.Print("None\t")
+		fmt.Print("None")
 	}
 	for ele := pcb.OtherResource.Front(); ele != nil; ele = ele.Next() {
 		pcbRes := ele.Value.(*process.PCBResource)
@@ -93,9 +93,10 @@ func showPCBDetail(pcb *process.PCB, isLastChilds []bool) {
 			fmt.Print(";")
 		}
 	}
+	fmt.Print("\t")
 
 	if pcb.Children.Len() == 0 {
-		fmt.Print("None\t")
+		fmt.Print("None")
 	}
 	for ele := pcb.Children.Front(); ele != nil; ele = ele.Next() {
 		fmt.Printf("%s", ele.Value.(*process.PCB).PID)
